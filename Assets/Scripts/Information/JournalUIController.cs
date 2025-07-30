@@ -13,7 +13,7 @@ public class JournalUIController : MonoBehaviour
     public GameObject entryBoxPrefab;
 
     [Header("Animation Settings")]
-    public float fadeInDuration = 0.3f;
+    public float fadeInDuration = 0.1f; // Μικρότερο για πιο γρήγορο animation
     public float scaleAnimationDuration = 0.2f;
 
     private CanvasGroup journalCanvasGroup;
@@ -37,42 +37,92 @@ public class JournalUIController : MonoBehaviour
 
     public void ShowJournal()
     {
-        if (isAnimating) return;
+        Debug.Log("JournalUIController.ShowJournal() called");
+        Debug.Log($"journalPanel: {(journalPanel != null ? "Found" : "Missing")}");
+        Debug.Log($"isAnimating: {isAnimating}");
+        
+        if (isAnimating) 
+        {
+            Debug.Log("Journal is animating, skipping...");
+            return;
+        }
 
+        if (journalPanel == null)
+        {
+            Debug.LogError("journalPanel is null! Cannot show journal.");
+            return;
+        }
+
+        Debug.Log("Setting journalPanel active and starting animation...");
         journalPanel.SetActive(true);
         StartCoroutine(AnimateJournalIn());
     }
 
     public void HideJournal()
     {
-        if (isAnimating) return;
+        Debug.Log("JournalUIController.HideJournal() called");
+        Debug.Log($"isAnimating: {isAnimating}");
+        
+        if (isAnimating) 
+        {
+            Debug.Log("Journal is animating, skipping hide...");
+            return;
+        }
 
+        Debug.Log("Starting hide animation...");
         StartCoroutine(AnimateJournalOut());
     }
 
     private IEnumerator AnimateJournalIn()
     {
+        Debug.Log("AnimateJournalIn started");
         isAnimating = true;
 
+        // Έλεγχος CanvasGroup
+        if (journalCanvasGroup == null)
+        {
+            Debug.LogError("journalCanvasGroup is null!");
+            isAnimating = false;
+            yield break;
+        }
+
+        Debug.Log("Setting initial animation values...");
+        Debug.Log($"fadeInDuration: {fadeInDuration}");
+        
         // Αρχικές τιμές
         journalCanvasGroup.alpha = 0f;
         journalPanel.transform.localScale = Vector3.one * 0.9f;
 
         float elapsedTime = 0f;
-        while (elapsedTime < fadeInDuration)
+        int frameCount = 0;
+        while (elapsedTime < fadeInDuration && frameCount < 1000) // Safety net
         {
             elapsedTime += Time.unscaledDeltaTime;
+            frameCount++;
             float progress = elapsedTime / fadeInDuration;
 
             journalCanvasGroup.alpha = Mathf.Lerp(0f, 1f, progress);
             journalPanel.transform.localScale = Vector3.Lerp(Vector3.one * 0.9f, Vector3.one, progress);
 
+            // Debug κάθε 30 frames
+            if (frameCount % 30 == 0)
+            {
+                Debug.Log($"Animation progress: {progress:F2}, alpha: {journalCanvasGroup.alpha:F2}, frame: {frameCount}");
+            }
+
             yield return null;
+        }
+        
+        if (frameCount >= 1000)
+        {
+            Debug.LogWarning("Animation loop exceeded 1000 frames, forcing completion!");
         }
 
         journalCanvasGroup.alpha = 1f;
         journalPanel.transform.localScale = Vector3.one;
         isAnimating = false;
+        
+        Debug.Log("AnimateJournalIn completed! Journal should now be visible.");
     }
 
     private IEnumerator AnimateJournalOut()

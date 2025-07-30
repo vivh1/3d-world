@@ -13,7 +13,7 @@ public class InformationManager : MonoBehaviour
     public TextMeshProUGUI popupTitleText;
     public TextMeshProUGUI popupDescriptionText;
 
-    // Νέα reference για το Journal Controller
+    // οΏ½οΏ½οΏ½ reference οΏ½οΏ½οΏ½ οΏ½οΏ½ Journal Controller
     [Header("Journal References")]
     public JournalUIController journalController;
 
@@ -34,6 +34,7 @@ public class InformationManager : MonoBehaviour
     private bool isJournalOpen = false;
     private Coroutine popupCoroutine;
     private CanvasGroup popupCanvasGroup;
+    private float lastToggleTime = 0f;
 
     private void Awake()
     {
@@ -49,10 +50,10 @@ public class InformationManager : MonoBehaviour
 
     private void Start()
     {
-        // Βεβαιώνουμε ότι τα UI είναι κλειστά στην αρχή
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½ οΏ½οΏ½ UI οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½
         informationPopupUI.SetActive(false);
 
-        // Παίρνουμε το Canvas Group component για animations
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½ Canvas Group component οΏ½οΏ½οΏ½ animations
         popupCanvasGroup = informationPopupUI.GetComponent<CanvasGroup>();
         if (popupCanvasGroup == null)
         {
@@ -65,15 +66,27 @@ public class InformationManager : MonoBehaviour
             audioSource = gameObject.AddComponent<AudioSource>();
         }
 
-        Debug.Log("InformationManager initialized successfully");
+        // Ξ‘ΟΟ‡ΞΉΞΊΞΏΟ€ΞΏΞ―Ξ·ΟƒΞ· journal state
+        isJournalOpen = false;
+        Debug.Log($"InformationManager initialized successfully. Journal state: {isJournalOpen}");
     }
 
     private void Update()
     {
-        // Toggle journal με το 'C'
+        // Toggle journal ΞΌΞµ Ο„ΞΏ 'C'
         if (Input.GetKeyDown(journalToggleKey))
         {
-            ToggleJournal();
+            // Cooldown Ξ³ΞΉΞ± Ξ±Ο€ΞΏΟ†Ο…Ξ³Ξ® double-press
+            if (Time.time - lastToggleTime > 0.5f)
+            {
+                Debug.Log("C key pressed! Toggling journal...");
+                lastToggleTime = Time.time;
+                ToggleJournal();
+            }
+            else
+            {
+                Debug.Log("C key pressed too quickly, ignoring...");
+            }
         }
     }
 
@@ -81,17 +94,17 @@ public class InformationManager : MonoBehaviour
     {
         Debug.Log("Trying to collect information: " + newInfo.title);
 
-        // Ελέγχουμε αν έχουμε ήδη αυτή την πληροφορία
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½
         foreach (var info in collectedInformation)
         {
             if (info.title == newInfo.title)
             {
                 Debug.Log("Information already exists");
-                return; // Έχουμε ήδη αυτή την πληροφορία
+                return; // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½
             }
         }
 
-        // Προσθέτουμε τη νέα πληροφορία
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½ οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½
         newInfo.isCollected = true;
         collectedInformation.Add(newInfo);
 
@@ -102,36 +115,36 @@ public class InformationManager : MonoBehaviour
     {
         Debug.Log($"ShowInformationPopup called with title: {info.title}, duration: {duration}");
 
-        // Ενημερώνουμε το κείμενο
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½
         if (popupTitleText != null)
             popupTitleText.text = info.title;
         if (popupDescriptionText != null)
             popupDescriptionText.text = info.description;
 
-        // Σταματάμε οποιοδήποτε τρέχον animation
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ animation
         if (popupCoroutine != null)
         {
             StopCoroutine(popupCoroutine);
             Debug.Log("Stopped previous popup coroutine");
         }
 
-        // Ξεκινάμε νέο coroutine
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½ coroutine
         popupCoroutine = StartCoroutine(AnimatedPopupDisplay(duration));
     }
 
     private IEnumerator AnimatedPopupDisplay(float displayDuration)
     {
-        // Παίζουμε τον ήχο
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½
         if (popupSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(popupSound);
         }
         Debug.Log($"AnimatedPopupDisplay started - will show for {displayDuration} seconds");
 
-        // Εμφανίζουμε το popup
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½ popup
         informationPopupUI.SetActive(true);
 
-        // Αρχικές τιμές
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½
         if (popupCanvasGroup != null)
         {
             popupCanvasGroup.alpha = 0f;
@@ -156,7 +169,7 @@ public class InformationManager : MonoBehaviour
             yield return null;
         }
 
-        // Βεβαιώνουμε τις τελικές τιμές
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½
         if (popupCanvasGroup != null)
         {
             popupCanvasGroup.alpha = 1f;
@@ -165,7 +178,7 @@ public class InformationManager : MonoBehaviour
 
         Debug.Log("Fade in complete");
 
-        // Περιμένουμε τον κύριο χρόνο εμφάνισης
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½
         yield return new WaitForSecondsRealtime(displayDuration);
         Debug.Log("Display duration complete");
 
@@ -187,10 +200,10 @@ public class InformationManager : MonoBehaviour
 
         Debug.Log("Fade out complete");
 
-        // Κρύβουμε το popup
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½ popup
         informationPopupUI.SetActive(false);
 
-        // Reset για την επόμενη φορά
+        // Reset οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½
         if (popupCanvasGroup != null)
         {
             popupCanvasGroup.alpha = 1f;
@@ -199,35 +212,54 @@ public class InformationManager : MonoBehaviour
 
         Debug.Log("Popup hidden successfully");
 
-        // Καθαρίζουμε το coroutine reference
+        // οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½ coroutine reference
         popupCoroutine = null;
     }
 
     public void ToggleJournal()
     {
         Debug.Log("Toggle journal pressed. Count: " + collectedInformation.Count);
+        Debug.Log($"InformationManager active: {gameObject.activeInHierarchy}");
+        Debug.Log($"JournalController: {(journalController != null ? "Found" : "Missing")}");
+        
         isJournalOpen = !isJournalOpen;
+        Debug.Log($"Journal state changed to: {(isJournalOpen ? "OPEN" : "CLOSED")}");
 
         if (isJournalOpen)
         {
-            // Χρησιμοποιούμε το JournalUIController
+            Debug.Log("Opening journal...");
+            // Ξ•Ξ½ΞµΟΞ³ΞΏΟ€ΞΏΞ―Ξ·ΟƒΞ· Ο„ΞΏΟ… JournalUIController
             if (journalController != null)
             {
+                Debug.Log("Calling ShowJournal()...");
                 journalController.ShowJournal();
+                Debug.Log("Calling PopulateJournal()...");
                 journalController.PopulateJournal(collectedInformation);
+                Debug.Log("Journal setup complete!");
+            }
+            else
+            {
+                Debug.LogError("JournalController is null!");
             }
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
         else
         {
-            // Κρύβουμε το journal
+            Debug.Log("Closing journal...");
+            // ΞΞ»ΞµΞ―ΟƒΞΉΞΌΞΏ Ο„ΞΏΟ… journal
             if (journalController != null)
             {
+                Debug.Log("Calling HideJournal()...");
                 journalController.HideJournal();
+            }
+            else
+            {
+                Debug.LogError("JournalController is null when trying to hide!");
             }
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            Debug.Log("Journal hide complete!");
         }
     }
 

@@ -17,6 +17,8 @@ public class InteractableObject : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse0) && playerInRange &&  SelectionManager.Instance.onTarget)
         {
+            Debug.Log($"InteractableObject: Trying to pick up item with name: '{ItemName}'");
+            
             if(!InventorySystem.Instance.CheckFull())
             {
                 InventorySystem.Instance.addToIventory(ItemName);

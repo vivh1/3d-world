@@ -80,42 +80,61 @@ public class ShopSystem : MonoBehaviour
     
     private void InitializeShopItems()
     {
-        // Δημιουργούμε μερικά δείγματα αντικειμένων για το κατάστημα
+        // === WEAPONS SECTION === //
         availableItems.Add(new ShopItem 
         { 
-            itemName = "⚔️ Σπαθί Ιππότη", 
-            description = "Εξαιρετικής ποιότητας σπαθί του κάστρου", 
-            price = 150, 
-            prefabName = "Cube", // Χρησιμοποιούμε το Cube ως placeholder
+            itemName = "🪓 Πολεμικός Τσεκούρι", 
+            description = "Επικό δίχειρο τσεκούρι για βαριά μάχη", 
+            price = 250, 
+            prefabName = "Axe2H_Epic",
             itemType = ShopItemType.Weapon 
         });
         
         availableItems.Add(new ShopItem 
         { 
-            itemName = "📜 Χρονικά του Κάστρου", 
-            description = "Αρχαίος τόμος με την ιστορία της καστροπολιτείας", 
-            price = 50, 
-            prefabName = "WhiteRabbit", // Placeholder
-            itemType = ShopItemType.Book 
+            itemName = "🏹 Πολεμικό Τόξο", 
+            description = "Επικό τόξο για εξ αποστάσεως μάχη", 
+            price = 180, 
+            prefabName = "Bow_Epic",
+            itemType = ShopItemType.Weapon 
         });
         
         availableItems.Add(new ShopItem 
         { 
-            itemName = "🏰 Μινιατούρα Φρουρίου", 
-            description = "Συλλεκτική αναπαράσταση του κάστρου", 
-            price = 200, 
-            prefabName = "Cube",
-            itemType = ShopItemType.Collectible 
+            itemName = "🔱 Δόρυ Θυρεάτη", 
+            description = "Εύχρηστο δόρυ μονόχειρο για ταχεία επίθεση", 
+            price = 120, 
+            prefabName = "Spear1H_Epic",
+            itemType = ShopItemType.Weapon 
         });
         
         availableItems.Add(new ShopItem 
         { 
-            itemName = "🏺 Βασιλικό Κύπελλο", 
-            description = "Χειροποίητο κεραμικό από τους βασιλικούς κήπους", 
-            price = 75, 
-            prefabName = "WhiteRabbit", // Placeholder
-            itemType = ShopItemType.Decoration 
+            itemName = "🛡️ Ασπίδα του Κάστρου", 
+            description = "Επικής ποιότητας ασπίδα για προστασία", 
+            price = 160, 
+            prefabName = "Shield_Epic",
+            itemType = ShopItemType.Weapon 
         });
+        
+        availableItems.Add(new ShopItem 
+        { 
+            itemName = "⚗️ Ραβδί Μάγου", 
+            description = "Μυστικό ραβδί με μαγικές ιδιότητες", 
+            price = 300, 
+            prefabName = "Staff_Epic",
+            itemType = ShopItemType.Weapon 
+        });
+        
+        availableItems.Add(new ShopItem 
+        { 
+            itemName = "🔨 Σφυρί Πολέμου", 
+            description = "Βαρύ δίχειρο σφυρί καταστροφής", 
+            price = 220, 
+            prefabName = "Mace2H_Epic",
+            itemType = ShopItemType.Weapon 
+        });
+        
     }
     
     private void CreateShopUI()
@@ -177,6 +196,17 @@ public class ShopSystem : MonoBehaviour
         colors.highlightedColor = Color.green;
         colors.pressedColor = Color.yellow;
         slotButton.colors = colors;
+        
+        // Προσθήκη tooltip
+        TooltipSystem tooltip = slot.GetComponent<TooltipSystem>();
+        if (tooltip == null)
+        {
+            tooltip = slot.AddComponent<TooltipSystem>();
+        }
+        
+        ShopItem item = availableItems[itemIndex];
+        tooltip.SetTooltipText(item.itemName + "\n" + item.description);
+        tooltip.showDelay = 0.1f;
     }
     
     public void PurchaseItem(ShopItem item)
@@ -237,6 +267,8 @@ public class ShopSystem : MonoBehaviour
         else
         {
             Cursor.lockState = CursorLockMode.Locked;
+            // Κρύβουμε όλα τα tooltips όταν κλείνει το shop
+            TooltipSystem.HideAllTooltips();
             Debug.Log("Shop closed");
         }
     }
@@ -254,6 +286,10 @@ public class ShopSystem : MonoBehaviour
         isShopOpen = false;
         if (shopPanel != null)
             shopPanel.SetActive(false);
+        
+        // Κρύβουμε όλα τα tooltips όταν κλείνει το shop
+        TooltipSystem.HideAllTooltips();
+        
         if (!InventorySystem.Instance.isOpen)
         {
             Cursor.lockState = CursorLockMode.Locked;

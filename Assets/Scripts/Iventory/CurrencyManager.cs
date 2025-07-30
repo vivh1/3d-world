@@ -4,7 +4,7 @@ public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager Instance { get; set; }
     
-    [SerializeField] private int playerGold = 1000; // Αρχικά χρήματα
+    [SerializeField] private int playerGold = 2000; // Αρχικά χρήματα - αυξημένα για τα νέα όπλα
     
     private void Awake()
     {

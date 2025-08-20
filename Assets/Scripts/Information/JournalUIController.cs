@@ -37,9 +37,7 @@ public class JournalUIController : MonoBehaviour
 
     public void ShowJournal()
     {
-        Debug.Log("JournalUIController.ShowJournal() called");
-        Debug.Log($"journalPanel: {(journalPanel != null ? "Found" : "Missing")}");
-        Debug.Log($"isAnimating: {isAnimating}");
+        
         
         if (isAnimating) 
         {
@@ -60,8 +58,6 @@ public class JournalUIController : MonoBehaviour
 
     public void HideJournal()
     {
-        Debug.Log("JournalUIController.HideJournal() called");
-        Debug.Log($"isAnimating: {isAnimating}");
         
         if (isAnimating) 
         {

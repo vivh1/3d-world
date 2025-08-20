@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ public class SelectionManager : MonoBehaviour
     public GameObject interaction_Info_UI;
     public bool onTarget;
     Text interaction_text;
+    public KeyCode journalToggleKey = KeyCode.E;
 
     private void Start()
     {
@@ -38,22 +40,34 @@ public class SelectionManager : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             var selectionTransform = hit.transform;
-
             InteractableObject ourInteractable = selectionTransform.GetComponent<InteractableObject>();
+            NPC npc = selectionTransform.GetComponent<NPC>();
 
-            if (ourInteractable && ourInteractable.playerInRange)
+            if (npc && npc.playerInRange)
+            {
+                interaction_text.text = "Press [E] to Talk";
+                interaction_Info_UI.SetActive(true);
+                if(Input.GetKeyDown(journalToggleKey) && npc.isTalkingWithPlayer == false)
+                {
+                    npc.StartConversation();
+                }
+                if (DialogueSystem.Instance.dialogUIActive)
+                {
+                    interaction_Info_UI.SetActive(false);
+                }
+            }
+            else if (ourInteractable && ourInteractable.playerInRange)
             {
                 onTarget = true;
                 interaction_text.text = ourInteractable.GetItemName();
                 interaction_Info_UI.SetActive(true);
-                Debug.Log(interaction_text);
             }
             else
             {
+                interaction_text.text = "";
                 interaction_Info_UI.SetActive(false);
                 onTarget = false;
             }
-
         }
         else
         {

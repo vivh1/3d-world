@@ -18,7 +18,7 @@ public class MouseMovement : MonoBehaviour
 
     void Update()
     {
-        if(!InventorySystem.Instance.isOpen)
+        if(DialogueSystem.Instance.dialogUIActive == false)
         {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;

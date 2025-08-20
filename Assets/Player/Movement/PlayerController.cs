@@ -22,6 +22,11 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private Vector3 moveDirection;
 
+    // Gravity and velocity
+    private float gravity = -9.81f;
+    private float verticalVelocity = 0f;
+    public float jumpHeight = 2f; // Jump height
+
     private float mouseX, mouseY;
 
     // Animation triggers for your animator
@@ -68,11 +73,23 @@ public class PlayerController : MonoBehaviour
         isGrounded = Physics.CheckSphere(groundCheck ? groundCheck.position : transform.position - new Vector3(0, 1f, 0),
                                         groundDistance, groundMask);
 
-        // Handle mouse look
-        HandleLook();
+        if (DialogueSystem.Instance.dialogUIActive == false)
+        {
 
-        // Process movement input
-        HandleMovementInput();
+            // Handle mouse look
+            HandleLook();
+
+            // Process movement input
+
+            HandleMovementInput();
+
+            // Handle jump input
+            HandleJumpInput();
+        }
+        else
+        {
+            Debug.Log("dialogue activate");
+        }
     }
 
     void HandleMovementInput()
@@ -86,6 +103,25 @@ public class PlayerController : MonoBehaviour
 
         // Update animation triggers based on movement direction
         UpdateAnimationState(horizontal, vertical);
+    }
+
+    void HandleJumpInput()
+    {
+        // If player presses the space key and is grounded, apply jump force
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity); // Jump formula
+        }
+
+        // Apply gravity
+        if (isGrounded && verticalVelocity < 0)
+        {
+            verticalVelocity = -2f; // Prevents the player from floating above ground
+        }
+        else
+        {
+            verticalVelocity += gravity * Time.deltaTime; // Apply gravity if not grounded
+        }
     }
 
     void UpdateAnimationState(float horizontal, float vertical)

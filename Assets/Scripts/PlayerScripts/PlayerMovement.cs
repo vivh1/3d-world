@@ -74,14 +74,23 @@ public class PlayerMovement : MonoBehaviour
         isGrounded = Physics.CheckSphere(groundCheck ? groundCheck.position : transform.position - new Vector3(0, 1f, 0),
                                         groundDistance, groundMask);
 
-        // Handle mouse look
-        HandleLook();
+        if (DialogueSystem.Instance.dialogUIActive == false)
+        {
+            
+            // Handle mouse look
+            HandleLook();
 
-        // Process movement input
-        HandleMovementInput();
+            // Process movement input
 
-        // Handle jump input
-        HandleJumpInput();
+            HandleMovementInput();
+
+            // Handle jump input
+            HandleJumpInput();
+        }
+        else
+        {
+            Debug.Log("dialogue activate");
+        }
     }
 
     void HandleMovementInput()
